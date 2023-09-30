@@ -1,0 +1,20 @@
+.keyboard {
+    display: flex;
+    gap: 12px;
+    background-color: #222;
+    width: fit-content;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.keyboard__main {
+    display: flex;
+    gap: 4px;
+    flex-direction: column;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
