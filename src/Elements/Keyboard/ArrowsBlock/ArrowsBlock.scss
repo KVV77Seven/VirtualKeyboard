@@ -1,0 +1,12 @@
+.ArrowsBlock {
+  display: flex;
+  gap: 8px;
+  &__subblock {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .height-sm-btn {
+    height: 18px;
+  }
+}

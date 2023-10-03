@@ -1,81 +1,38 @@
-import { classNames } from '../../utils/classNames';
 import './Btn.scss';
 import { subscribeOnSwitchLayout, getLayout, layouts } from '../Keyboard/Keyboard';
-const oneCharBtnClass = "one-char";
-const twoCharBtnClass = "two-chars";
+import {MakeBtnCommon} from "./Common/MakeBtnCommon";
+import {MakeBtnSpecial} from "./Special/MakeBtnSpecial";
+import {classNames} from "../../utils/classNames";
+
+const btnPressedClass = "Btn_pressed";
+const btnPressedAnimTime = 150;
 
 export default function Btn(
     key,
     className,
 ) {
-    const char = key?.char;
-    const width = key?.width;
     const btn = document.createElement('div');
-    btn.className = classNames('Btn', className);
-
-    if(char) {
-        let isHaveShift = false;
-
-        const charP = document.createElement('p');
-        const charPShift = document.createElement('p');
-    
-        charP.className = "Btn__text";
-        charPShift.className = "Btn__text";
-    
-        btn.appendChild(charP);
-        btn.appendChild(charPShift);
-        
-        switchLayout(getLayout());
-        subscribeOnSwitchLayout(switchLayout);
-
-        if (isHaveShift) {
-            btn.classList.add(twoCharBtnClass);
-            btn.classList.remove(oneCharBtnClass);
-        } else {
-            btn.classList.add(oneCharBtnClass);
-            btn.classList.remove(twoCharBtnClass);
-        }
-
-        btn.switchLayout = switchLayout;
-        function switchLayout(layout) {
-
-            switch(layout) {
-                case layouts.EN: {
-                    isHaveShift = char.en?.shift ? true : false;
-                    setEnChars();
-                    break;
-                }
-                case layouts.RU: {
-                    isHaveShift = char.ru?.shift ? true : false;
-                    setRuChars();
-                    break;
-                }
-            }
-        }
-        function setEnChars() {
-            charP.innerHTML = char.en.normal;
-            if (isHaveShift) {
-                charPShift.innerHTML = char.en.shift;
-            }
-        }
-        function setRuChars() {
-            charP.innerHTML = char.ru.normal;
-            if (isHaveShift) {
-                charPShift.innerHTML = char.en.shift;
-            }
-            
-        }
+    btn.className = classNames("Btn", className);
+    if (key?.char) {
+        MakeBtnCommon(btn, key, btnPressedClass, btnPressedAnimTime);
+    } else if(key?.special) {
+        MakeBtnSpecial(btn, key);
     }
-    if (width) {
-        btn.style.width = width + "px";
+    if (key?.width) {
+        btn.style.width = key.width + "px";
     }
+
+    let isKeyDown = false;
     document.addEventListener('keydown', (event) => {
-        if (event.code == key.eventCode) {
+        if (event.code === key.eventCode) {
             callKeyDown();
+            if (!isKeyDown) {
+                btn.classList.add(btnPressedClass);
+            }
+            isKeyDown = true;
         }
-      });
-
-    btn.subscribeOnClick = (func) => {
+    });
+    btn.subscribeOnKeyDown = (func) => {
         keyDownFuncs.push(func);
     }
     function callKeyDown() {
@@ -84,6 +41,60 @@ export default function Btn(
         })
     }
     const keyDownFuncs = [];
+
+
+    document.addEventListener('keyup', (event) => {
+        if (event.code === key.eventCode && event.code) {
+            btn.classList.remove(btnPressedClass);
+            callKeyUp();
+            isKeyDown = false;
+        }
+    });
+    btn.subscribeOnKeyUp = (func) => {
+        keyUpFuncs.push(func);
+    }
+    function callKeyUp() {
+        keyUpFuncs.forEach((func) => {
+            func();
+        })
+    }
+    const keyUpFuncs = [];
+
+
+    let isMouseDown = false;
+    btn.addEventListener('mousedown', () => {
+        if (!isMouseDown) {
+            btn.classList.add(btnPressedClass);
+        }
+        callKeyDown()
+        if (isMouseDown) {
+            return;
+        }
+        isMouseDown = true;
+        setTimeout(() => {
+            if (!isMouseDown) {
+                return;
+            }
+            whileMouseDown();
+        }, 500)
+
+
+        function whileMouseDown() {
+            if (!isMouseDown) {
+                return
+            }
+            setTimeout(() => {
+                callKeyDown();
+                whileMouseDown();
+            }, 30);
+        }
+    });
+
+    btn.addEventListener('mouseup', () => {
+        isMouseDown = false
+        btn.classList.remove(btnPressedClass);
+        callKeyUp();
+    })
     return btn;
 }
 

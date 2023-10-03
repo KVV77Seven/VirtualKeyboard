@@ -1,0 +1,16 @@
+
+
+.Btn_special {
+  justify-content: center;
+  gap: 8px;
+
+  &__img {
+    width: 20px;
+    height: 20px;
+  }
+
+  &__text {
+    font-weight: lighter;
+    font-size: 9px;
+  }
+}

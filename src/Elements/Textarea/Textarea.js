@@ -11,7 +11,6 @@ export function Textarea() {
     textarea.appendChild(textField);
 
     textarea.addChar = (char) => {
-        console.log(text);
         text = text.substring(0, currentIndex) + char + text.substring(currentIndex);
         textField.textContent = text;
         currentIndex++;
@@ -22,6 +21,12 @@ export function Textarea() {
             textField.textContent = text;
             currentIndex--;
         }
+    }
+    textarea.cursorMoveRight = () => {
+        currentIndex < text.length ? currentIndex++ : "";
+    }
+    textarea.cursorMoveLeft = () => {
+        currentIndex > 0 ? currentIndex-- : "";
     }
     return textarea;
 }

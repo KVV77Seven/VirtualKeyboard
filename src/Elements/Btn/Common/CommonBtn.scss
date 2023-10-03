@@ -1,0 +1,15 @@
+.Btn_common {
+  flex-direction: row-reverse;
+  justify-content: space-around;
+
+}
+
+.Btn__special-text {
+
+}
+
+.one-char {
+  .Btn__char:nth-child(2) {
+    display: none;
+  }
+}
